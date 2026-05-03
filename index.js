@@ -1,37 +1,44 @@
+// load environment variables from .env
 require('dotenv').config();
 
+// import express framework
 const express = require('express');
+
+// create express app
 const app = express();
 
-const pool = require('./db');
+// import database (just to initialize connection)
+require('./config/db');
 
-// Middleware to read JSON body
+// middleware to parse JSON request body
 app.use(express.json());
 
-/* -----------------------------
-   DB CHECK ROUTE (TEST ONLY)
-------------------------------*/
-app.get('/check-db', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT current_database()');
-    res.json({
-      message: "Database connected successfully",
-      data: result.rows[0]
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+/* ==============================
+   ROUTES
+============================== */
 
-/* -----------------------------
-   ADMIN ROUTES
-------------------------------*/
+// import admin routes
 const adminRoutes = require('./routes/adminRoutes');
+
+// mount admin routes with base path
 app.use('/admin', adminRoutes);
 
-/* -----------------------------
+
+/* ==============================
+   TEST ROUTE (optional)
+============================== */
+
+// simple route to check server is working
+app.get('/', (req, res) => {
+  res.send("Server is running 🚀");
+});
+
+
+/* ==============================
    START SERVER
-------------------------------*/
+============================== */
+
+// start server on given port
 app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
+  console.log(`✅ Server running on port ${process.env.PORT}`);
 });
